@@ -16,11 +16,9 @@ function App() {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    // 서버에 웹소켓 연결
-    const ws = new WebSocket("ws://localhost:4000");
+    const ws = new WebSocket("ws://172.30.1.44:4000");
     ws.onopen = () => console.log("Connected to WebSocket server");
     ws.onclose = () => console.log("Disconnected from WebSocket server");
-
     setSocket(ws);
 
     return () => {
@@ -30,7 +28,7 @@ function App() {
 
   const handleClick = (number) => {
     if (socket) {
-      socket.send(number); // 클릭한 번호를 서버로 전송
+      socket.send(number);
     }
   };
 
