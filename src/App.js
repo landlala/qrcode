@@ -1,24 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+
+const Container = styled.div`
+  display: flex;
+`;
+
+const Button = styled.button`
+  width: 100px;
+  height: 100px;
+  background-color: lightgray;
+  margin: 5px;
+`;
 
 function App() {
+  const [socket, setSocket] = useState(null);
+
+  useEffect(() => {
+    // 서버에 웹소켓 연결
+    const ws = new WebSocket("ws://localhost:4000");
+    ws.onopen = () => console.log("Connected to WebSocket server");
+    ws.onclose = () => console.log("Disconnected from WebSocket server");
+
+    setSocket(ws);
+
+    return () => {
+      if (ws) ws.close();
+    };
+  }, []);
+
+  const handleClick = (number) => {
+    if (socket) {
+      socket.send(number); // 클릭한 번호를 서버로 전송
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container>
+      {[1, 2, 3, 4].map((num) => (
+        <Button key={num} onClick={() => handleClick(num)}>
+          {num}
+        </Button>
+      ))}
+    </Container>
   );
 }
 
