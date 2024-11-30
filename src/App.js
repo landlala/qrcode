@@ -5,7 +5,7 @@ function App() {
   const [numbers, setNumbers] = useState([]);
 
   useEffect(() => {
-    const ws = new WebSocket("ws://54.83.200.150:8080");
+    const ws = new WebSocket("wss://54.83.200.150:443");
     ws.onopen = () => console.log("서버에 연결됨");
     ws.onclose = () => console.log("서버와의 연결 종료");
     ws.onmessage = (event) => {
@@ -24,7 +24,7 @@ function App() {
   // changing video
   const handleButtonClick = (number) => {
     if (clientId !== null) {
-      const ws = new WebSocket("ws://54.83.200.150:8080");
+      const ws = new WebSocket("wss://54.83.200.150:443");
       ws.onopen = () => {
         ws.send(
           JSON.stringify({ action: "update", clientId, videoId: number })
