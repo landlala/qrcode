@@ -1,45 +1,60 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-
-const Container = styled.div`
-  display: flex;
-`;
-
-const Button = styled.button`
-  width: 100px;
-  height: 100px;
-  background-color: lightgray;
-  margin: 5px;
-`;
 
 function App() {
-  const [socket, setSocket] = useState(null);
+  const [clientId, setClientId] = useState(null);
+  const [numbers, setNumbers] = useState([]);
 
   useEffect(() => {
-    const ws = new WebSocket("ws://172.30.1.44:4000");
-    ws.onopen = () => console.log("Connected to WebSocket server");
-    ws.onclose = () => console.log("Disconnected from WebSocket server");
-    setSocket(ws);
+    const ws = new WebSocket("ws://54.83.200.150:8080");
+    ws.onopen = () => console.log("서버에 연결됨");
+    ws.onclose = () => console.log("서버와의 연결 종료");
+    ws.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      if (message.action === "sync") {
+        setClientId(message.currentSelection.clientId);
+        setNumbers(message.ids);
+      }
+    };
 
     return () => {
       if (ws) ws.close();
     };
   }, []);
 
-  const handleClick = (number) => {
-    if (socket) {
-      socket.send(number);
+  // changing video
+  const handleButtonClick = (number) => {
+    if (clientId !== null) {
+      const ws = new WebSocket("ws://54.83.200.150:8080");
+      ws.onopen = () => {
+        ws.send(
+          JSON.stringify({ action: "update", clientId, videoId: number })
+        );
+      };
     }
   };
 
   return (
-    <Container>
-      {[1, 2, 3, 4].map((num) => (
-        <Button key={num} onClick={() => handleClick(num)}>
-          {num}
-        </Button>
-      ))}
-    </Container>
+    <div>
+      <h1>클라이언트 ID: {clientId}</h1>
+      <h2>받은 숫자 세트: {numbers.join(", ")}</h2>
+      <div>
+        {numbers.map((number) => (
+          <button
+            key={number}
+            style={{
+              width: "150px",
+              height: "100px",
+              fontSize: "18px",
+              borderRadius: "8px",
+              margin: "10px",
+            }}
+            onClick={() => handleButtonClick(number)}
+          >
+            {number}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 
