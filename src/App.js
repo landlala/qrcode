@@ -1,9 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { styled, createGlobalStyle } from "styled-components";
 import { AnimatePresence, motion } from "framer-motion";
 
 const GlobalStyle = createGlobalStyle`
+  @font-face {
+    font-family: "MarcellusSC-Regular";
+    src: url("/assets/MarcellusSC-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+  }
   body, html {
+    font-family: "MarcellusSC-Regular", sans-serif;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -24,6 +31,10 @@ const Nav = styled.div`
   align-items: center;
   img {
     height: 4vh;
+  }
+  p {
+    color: white;
+    font-size: 4vh;
   }
 `;
 
@@ -52,8 +63,9 @@ const Profile = styled.img`
 `;
 
 const ClientName = styled.span`
-  margin-top: 10px;
+  margin-top: 30px;
   color: white;
+  font-weight: 600;
   font-size: 5vw;
 `;
 
@@ -66,17 +78,18 @@ const OtherZone = styled.div`
 
 const PhotoGrid = styled.div`
   display: flex;
+  gap: 10px;
   flex-wrap: wrap;
   justify-content: center;
-  max-width: 800px;
+  max-width: 1000px;
   min-height: 200px;
 `;
 
 const PhotoBox = styled.div`
-  width: 50%;
+  width: 40%;
   aspect-ratio: 16 / 9;
   min-width: 150px;
-  min-height: 100px;
+  min-height: 70px;
   overflow: hidden;
   cursor: pointer;
   display: flex;
@@ -86,8 +99,8 @@ const PhotoBox = styled.div`
   padding-bottom: 20px;
   opacity: ${(props) => (props.isActive ? 1 : 0.3)};
   img {
-    width: 80%;
-    height: 80%;
+    width: 100%;
+    height: 100%;
     border-radius: 10px;
     object-fit: cover;
   }
@@ -104,6 +117,12 @@ function App() {
   const [visible, setVisible] = useState(1);
   const [back, setBack] = useState(false);
   const [clickedBox, setClickedBox] = useState(1);
+  const clientName = useMemo(() => {
+    if (clientId === "c6b8") return "정임숙";
+    if (clientId === "4de9") return "우은빈";
+    if (clientId === "7e0e") return "임유빈";
+    if (clientId === "3af9") return "이애자";
+  }, [clientId]);
 
   useEffect(() => {
     const ws = new WebSocket("wss://ws.thelifegalleryvideo.com");
@@ -115,7 +134,11 @@ function App() {
       if (message.action === "sync") {
         setClientId(message.currentSelection.clientId);
         setNumbers(message.ids);
-        setImageCount(3);
+        if (message.currentSelection.clientId === "4de9") {
+          setImageCount(7);
+        } else {
+          setImageCount(1);
+        }
       }
     };
 
@@ -143,14 +166,15 @@ function App() {
       <GlobalStyle />
       <Back>
         <Nav>
-          <img src="/image/logo.png" />
+          <p>The Life Gallery</p>
         </Nav>
         <Contents>
           <ProfileZone>
             <Profile
-              src={`https://thelifegalleryvideo.com/image/${clientId}/profile.jpg`}
+              // src={`https://thelifegalleryvideo.com/image/${clientId}/profile.jpg`}
+              src={`/image/${clientId}/profile.jpg`}
             />
-            <ClientName>{clientId}</ClientName>
+            <ClientName>{clientName}</ClientName>
           </ProfileZone>
           <OtherZone>
             <PhotoGrid>
@@ -162,10 +186,11 @@ function App() {
                     isActive={clickedBox === number}
                   >
                     <img
-                      src={`https://thelifegalleryvideo.com/image/${clientId}/${number}.jpg`}
+                      // src={`https://thelifegalleryvideo.com/image/${clientId}/${number}.jpg`}
+                      src={`/image/${clientId}/${number}.jpg`}
                       alt={`Photo ${number}`}
                     />
-                    <span>{`${clientId} - ${number}`}</span>
+                    {/* <span>{`${clientId} - ${number}`}</span> */}
                   </PhotoBox>
                 )
               )}

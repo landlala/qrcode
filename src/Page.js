@@ -9,7 +9,7 @@ function Page() {
     <HashRouter>
       <Routes>
         <Route path="play" element={<LaptopApp />}></Route>
-        <Route path="admin" element={<Admin />}></Route>
+        <Route path="admin7d9f8g3h" element={<Admin />}></Route>
         <Route path="/" element={<App />}></Route>
       </Routes>
     </HashRouter>

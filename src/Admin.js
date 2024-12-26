@@ -56,7 +56,7 @@ const Admin = () => {
         <button onClick={() => handleClick("4de9")}>우은빈님</button>
         <button onClick={() => handleClick("3af9")}>이애자님</button>
         <button onClick={() => handleClick("7e0e")}>임유빈님</button>
-        <button onClick={() => handleClick("c6b8")}>정임숙님</button>
+        {/* <button onClick={() => handleClick("c6b8")}>정임숙님</button> */}
       </div>
       <div>
         <h3>Server Message:</h3>

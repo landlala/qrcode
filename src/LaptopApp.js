@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { createGlobalStyle, styled } from "styled-components";
 
 const GlobalStyle = createGlobalStyle`
@@ -33,16 +33,25 @@ const VideoZone = styled.div`
 `;
 
 const Video = styled.video`
-  width: 70%;
+  width: 90%;
   height: auto;
   max-width: 100%;
   max-height: 100%;
   object-fit: cover;
-  aspect-ratio: 5 / 7;
+  aspect-ratio: 1.9 / 2.45;
+  border-radius: 30px;
 `;
 
 const Info = styled.div`
   color: white;
+`;
+
+const UnmuteIcon = styled.img`
+  position: absolute;
+  bottom: 30px;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
 `;
 
 function LaptopApp() {
@@ -50,6 +59,8 @@ function LaptopApp() {
   const [videoId, setVideoId] = useState(null);
   const [clientId, setClientId] = useState(null);
   const [info, setInfo] = useState("");
+  const [showButton, setShowButton] = useState(true);
+  const videoRef = useRef(null);
 
   useEffect(() => {
     const ws = new WebSocket("wss://ws.thelifegalleryvideo.com");
@@ -63,7 +74,9 @@ function LaptopApp() {
         console.log("현재 상태:", data);
         const { clientId, videoId } = data.currentSelection;
         if (clientId && videoId) {
-          const videoPath = `/videos/${clientId}/video${videoId}.mp4`;
+          const videoPath = `/videos/${clientId}/zone6_videoMessage_${
+            videoId - 1
+          }.mp4`;
           setMovie(videoPath);
           setInfo(`client: ${clientId}, video: ${videoId}`);
         }
@@ -75,18 +88,31 @@ function LaptopApp() {
     };
   }, []);
 
+  const handleUnmute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = false;
+      videoRef.current.play();
+    }
+    setShowButton(false);
+  };
+
   return (
     <>
       <GlobalStyle />
       <Wrapper>
         <Back />
         <VideoZone>
-          <Video key={movie} autoPlay muted playsInline loop>
+          <Video key={movie} autoPlay muted playsInline loop ref={videoRef}>
             <source src={movie} type="video/mp4" />
           </Video>
-          <Info>{info}</Info>
+          {showButton && (
+            <UnmuteIcon
+              src="/image/unmute.png"
+              alt="Unmute"
+              onClick={handleUnmute}
+            />
+          )}
         </VideoZone>
-
         <Back />
       </Wrapper>
     </>
